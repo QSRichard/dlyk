@@ -37,7 +37,7 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {doPost} from '../http/httpRequest'
-import {messageTip} from '../utils/message'
+import {messageTip, removeToken} from '../utils/message'
 
 export default defineComponent({
   // 组件名字
@@ -84,12 +84,15 @@ export default defineComponent({
           formData.append("loginAct", this.user.loginAct)
           formData.append("loginPwd", this.user.loginPwd)
           formData.append("rememberMe", this.user.rememberMe)
-          
+
           doPost("/api/login", formData).then(
               (resp) => {
                 console.log(resp);
                 if (resp.data.code === 200) {
                   messageTip('登录成功', 'success')
+
+                  // 登录成功之后 删除历史存储的token
+                  removeToken()
 
                   // 前端存储JWT
                   if (this.user.rememberMe === true) {

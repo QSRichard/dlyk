@@ -26,9 +26,7 @@ public class JWTUtils {
     public static Boolean verifyJWT(String token) {
 
         try {
-
-            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(token)).build();
-
+            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(JWT_SECRET)).build();
             // 没有抛出异常 说明验证通过
             jwtVerifier.verify(token);
             return true;

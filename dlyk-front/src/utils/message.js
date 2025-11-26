@@ -8,3 +8,9 @@ export function messageTip(msg, type) {
         type: type, // 消息类型
     })
 }
+
+// 删除token
+export function removeToken() {
+    window.localStorage.removeItem("dlyk_token");
+    window.sessionStorage.removeItem("dlyk_token");
+}
