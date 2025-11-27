@@ -13,12 +13,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.richard.result.CodeEnum.*;
 
@@ -29,6 +31,10 @@ public class TokenVerifyFilter extends OncePerRequestFilter {
 
     @Resource
     private RedisService redisService;
+
+    // spring boot 提前创建好的线程池 可以直接注入使用
+    @Resource
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -78,6 +84,26 @@ public class TokenVerifyFilter extends OncePerRequestFilter {
             String resultJson = JsonUtils.toJson(result);
             ResponseUtils.write(response, resultJson);
         }
+
+
+        // 刷新一下Token 异步处理
+//        new Thread(() -> {
+//            String rememberMe = request.getHeader("rememberMe");
+//            if (Boolean.parseBoolean(rememberMe)) {
+//                redisService.expire(Constants.REDIS_JWT_KEY + user.getId(), Constants.JWT_REDIS_EXPIRE_TIME, TimeUnit.SECONDS);
+//            } else {
+//                redisService.expire(Constants.REDIS_JWT_KEY + user.getId(), Constants.DEFAULT_JWT_REDIS_EXPIRE_TIME, TimeUnit.SECONDS);
+//            }
+//        }).start();
+
+        threadPoolTaskExecutor.execute(() -> {
+            String rememberMe = request.getHeader("rememberMe");
+            if (Boolean.parseBoolean(rememberMe)) {
+                redisService.expire(Constants.REDIS_JWT_KEY + user.getId(), Constants.JWT_REDIS_EXPIRE_TIME, TimeUnit.SECONDS);
+            } else {
+                redisService.expire(Constants.REDIS_JWT_KEY + user.getId(), Constants.DEFAULT_JWT_REDIS_EXPIRE_TIME, TimeUnit.SECONDS);
+            }
+        });
 
         // token 验证通过，在SpringSecurity的上下文环境中设置 当前用户已登录 后续不需要再拦截
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

@@ -36,8 +36,8 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {doPost} from '../http/httpRequest'
-import {messageTip, removeToken} from '../utils/message'
+import {doGet, doPost} from '../http/httpRequest'
+import {getTokenName, messageTip, removeToken} from '../utils/message'
 
 export default defineComponent({
   // 组件名字
@@ -75,8 +75,14 @@ export default defineComponent({
     }
   },
 
+  // 页面渲染dom元素后会触发该函数
+  mounted() {
+    this.freeLogin()
+  },
   // method 属性 页面上使用的js函数 都在method中定义
   methods: {
+
+    // 登录函数
     login() {
       this.$refs.loginRefForm.validate((isValid) => {
         if (isValid) {
@@ -96,9 +102,9 @@ export default defineComponent({
 
                   // 前端存储JWT
                   if (this.user.rememberMe === true) {
-                    window.localStorage.setItem("dlyk_token", resp.data.data)
+                    window.localStorage.setItem(getTokenName(), resp.data.data)
                   } else {
-                    window.sessionStorage.setItem("dlyk_token", resp.data.data)
+                    window.sessionStorage.setItem(getTokenName(), resp.data.data)
                   }
                   // 跳转到系统的主页面
                   window.location.href = '/dashboard';
@@ -109,6 +115,19 @@ export default defineComponent({
           )
         }
       })
+    },
+
+    // 免密登录
+    freeLogin() {
+      let token = window.localStorage.getItem(getTokenName());
+      // console.log("free login token " + token)
+      if (token) {
+        doGet("api/login/free", {}).then(resp => {
+          if (resp.data.code == 200) {
+            window.location.href = "/dashboard"
+          }
+        })
+      }
     }
   }
 

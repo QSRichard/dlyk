@@ -1,4 +1,4 @@
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export function messageTip(msg, type) {
     ElMessage({
@@ -9,8 +9,26 @@ export function messageTip(msg, type) {
     })
 }
 
+
+export function getTokenName() {
+    return "dlyk_token";
+}
+
 // 删除token
 export function removeToken() {
-    window.localStorage.removeItem("dlyk_token");
-    window.sessionStorage.removeItem("dlyk_token");
+    window.localStorage.removeItem(getTokenName());
+    window.sessionStorage.removeItem(getTokenName());
+}
+
+
+// 消息确认
+export function messageConfirm(msg) {
+    return ElMessageBox.confirm(
+        msg, 'Warning',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
 }

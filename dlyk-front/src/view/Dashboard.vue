@@ -14,15 +14,26 @@ import {
 } from "@element-plus/icons-vue";
 
 import {doGet} from '../http/httpRequest'
+import {messageConfirm, messageTip, removeToken} from '../utils/message'
 
 export default defineComponent({
   name: "Dashboard",
 
   data() {
     return {
-      isCollapse: false
+      isCollapse: false,
+      // 登录人信息
+      user: {},
     }
   },
+
+  // vue的函数钩子 mounted 在页面渲染后执行
+  mounted(): any {
+    // 加载当前用户
+    this.loadLoginUser()
+  },
+
+
   methods: {
     showMenu() {
       this.isCollapse = !this.isCollapse
@@ -31,13 +42,28 @@ export default defineComponent({
     loadLoginUser() {
       doGet("api/login/info", {}).then((resp) => {
         console.log(resp)
+        this.user = resp.data.data;
+      })
+    },
+
+    logout() {
+      doGet("api/logout", {}).then(resp => {
+        // 退出成功
+        if (resp.data.code == 200) {
+          removeToken()
+          messageTip("退出成功", "success")
+          window.location.href = '/'
+          return
+        }
+
+        messageConfirm("退出异常, 是否强制退出？").then(() => {
+          removeToken();
+          window.location.href = '/'
+        }).catch(() => {
+          messageTip("取消强制退出", "warning")
+        })
       })
     }
-  },
-  // vue的函数钩子 mounted 在页面渲染后执行
-  mounted(): any {
-    // 加载当前用户
-    this.loadLoginUser()
   },
   components: {Fold, Setting, UserFilled, CreditCard, Film, DataAnalysis, Notification, User, Operation, OfficeBuilding}
 })
@@ -56,7 +82,9 @@ export default defineComponent({
           style="border-right: solid 0px;"
           :collapse="isCollapse"
           :collapse-transition="false"
-          :unique-opened="true">
+          :unique-opened="true"
+          :router="true"
+      >
 
 
         <el-sub-menu index="1">
@@ -171,7 +199,7 @@ export default defineComponent({
             </el-icon>
             <span>用户管理</span>
           </template>
-          <el-menu-item index="1-1">
+          <el-menu-item index="/dashboard/user">
             <el-icon>
               <UserFilled></UserFilled>
             </el-icon>
@@ -208,7 +236,7 @@ export default defineComponent({
 
         <el-dropdown :hide-on-click="false">
     <span class="el-dropdown-link">
-      Dropdown List
+      {{ user.name }}
       <el-icon class="el-icon--right"><arrow-down/></el-icon>
     </span>
           <template #dropdown>
@@ -217,13 +245,17 @@ export default defineComponent({
               <el-dropdown-item>修改密码</el-dropdown-item>
 
 
-              <el-dropdown-item divided>退出登录</el-dropdown-item>
+              <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
 
       </el-header>
-      <el-main>Main</el-main>
+
+
+      <el-main>
+        <router-view></router-view>
+      </el-main>
       <el-footer>@版权所有 动力节点</el-footer>
     </el-container>
   </el-container>

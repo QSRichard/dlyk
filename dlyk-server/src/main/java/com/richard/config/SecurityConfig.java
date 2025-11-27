@@ -4,6 +4,7 @@ package com.richard.config;
 import com.richard.config.filter.TokenVerifyFilter;
 import com.richard.config.handler.MyAuthenticationFailureHandler;
 import com.richard.config.handler.MyAuthenticationSuccessHandler;
+import com.richard.config.handler.MyLogoutSuccessHandler;
 import com.richard.constant.Constants;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,9 @@ public class SecurityConfig {
     @Resource
     private TokenVerifyFilter tokenVerifyFilter;
 
+    @Resource
+    private MyLogoutSuccessHandler myLogoutSuccessHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -51,13 +55,20 @@ public class SecurityConfig {
                     authorize.requestMatchers(Constants.LOGIN_URL).permitAll().anyRequest().authenticated();
                 }).
                 csrf(AbstractHttpConfigurer::disable).
-                cors((cors) -> {
+
+                // 支持跨域请求
+                        cors((cors) -> {
                     cors.configurationSource(configurationSource);
                 }).sessionManagement((session) -> {
                     // session 创建策略
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 }).
-                addFilterBefore(tokenVerifyFilter, LogoutFilter.class)
+
+                logout(logout -> {
+                    logout.logoutUrl("/api/logout").logoutSuccessHandler(myLogoutSuccessHandler);
+                }).
+                // 添加自定义的filter
+                        addFilterBefore(tokenVerifyFilter, LogoutFilter.class)
                 .build();
     }
 

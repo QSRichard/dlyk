@@ -1,6 +1,5 @@
 import axios from "axios";
-import {ElMessageBox} from "element-plus";
-import {messageTip} from "../utils/message.js";
+import {getTokenName, messageConfirm, messageTip} from "../utils/message.js";
 
 // 定义后端接口地址前缀
 axios.defaults.baseURL = 'http://localhost:8089'
@@ -59,15 +58,16 @@ export function doPut(url, data) {
 
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
-    let token = window.sessionStorage.getItem("dlyk_token");
+    let token = window.sessionStorage.getItem(getTokenName());
 
     if (!token) {
         console.log('empty token');
-        token = window.localStorage.getItem("dlyk_token");
+        token = window.localStorage.getItem(getTokenName());
     }
     if (token) {
         console.log('token', token);
         config.headers['Authorization'] = token;
+        config.headers['rememberMe'] = 'true';
     }
     return config;
 }, (error) => {
@@ -79,19 +79,13 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
     // 拦截token验证的结果 token问题
     if (response.data.code > 900) {
-        ElMessageBox.confirm(
-            response.data.msg + '是否重新登录?',// 提示语
-            {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }
-        ).then(() => {
+        messageConfirm(response.data.msg + '是否重新登录?').then(() => {
             // 用户点击确定 跳转登录页
             window.location.href = '/';
         }).catch(() => {
             messageTip("取消去登录", 'warning')
         })
+        return;
     }
     return response;
 }, (error) => {

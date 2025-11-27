@@ -17,10 +17,10 @@ public class UserController {
         return R.OK(user);
     }
 
-//    // 获取登录人信息
-//    @GetMapping(value = "/api/login")
-//    public R login(Authentication authentication) {
-////        TUser user = (TUser) authentication.getPrincipal();
-//        return R.OK(0, "success");
-//    }
+
+    // 免登录
+    @GetMapping(value = "api/login/free")
+    public R freeLogin() {
+        return R.OK(200, "Success");
+    }
 }
