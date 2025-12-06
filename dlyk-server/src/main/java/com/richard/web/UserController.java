@@ -1,11 +1,13 @@
 package com.richard.web;
 
 
+import com.github.pagehelper.PageInfo;
 import com.richard.model.TUser;
 import com.richard.result.R;
 import com.richard.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +29,7 @@ public class UserController {
 
 
     // 免登录
-    @GetMapping(value = "api/login/free")
+    @GetMapping(value = "/api/login/free")
     public R freeLogin() {
         return R.OK(200, "Success");
     }
@@ -39,7 +41,15 @@ public class UserController {
         if (current == null) {
             current = 1;
         }
-        userService.getUserByPage(current);
-        return R.OK(200, "Success");
+        PageInfo<TUser> userList = userService.getUserByPage(current);
+
+        return R.OK(userList);
+    }
+
+    @GetMapping(value = "/api/user/{id}")
+    public R getUserDetail(@PathVariable Integer id) {
+        TUser user = userService.getUserDetailById(id);
+        return R.OK(user);
+
     }
 }

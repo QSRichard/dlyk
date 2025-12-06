@@ -1,5 +1,8 @@
 package com.richard.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.richard.constant.Constants;
 import com.richard.mapper.TUserMapper;
 import com.richard.model.TUser;
 import com.richard.service.UserService;
@@ -7,6 +10,8 @@ import jakarta.annotation.Resource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -27,9 +32,21 @@ public class UserServiceImpl implements UserService {
         System.out.println(user);
         return user;
     }
-    
-    @Override
-    public void getUserByPage(Integer current) {
 
+    @Override
+    public PageInfo<TUser> getUserByPage(Integer current) {
+
+        // 1 设置PageHelper
+        PageHelper.startPage(current, Constants.DEFAULT_PAGE_SIZE);
+
+        List<TUser> userList = userMapper.selectUserByPage();
+
+        PageInfo<TUser> pageInfo = new PageInfo<>(userList);
+        return pageInfo;
+    }
+
+    @Override
+    public TUser getUserDetailById(Integer id) {
+        return userMapper.selectDetailById(id);
     }
 }

@@ -36,6 +36,13 @@ public class TUser implements UserDetails, Serializable {
      */
     private String loginPwd;
 
+
+    /**
+     * 一对一关联
+     */
+    private TUser createByDO;
+    private TUser editByDO;
+
     /**
      * 用户姓名
      */

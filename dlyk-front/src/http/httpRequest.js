@@ -61,7 +61,7 @@ axios.interceptors.request.use(function (config) {
     let token = window.sessionStorage.getItem(getTokenName());
 
     if (!token) {
-        console.log('empty token');
+        // console.log('empty token');
         token = window.localStorage.getItem(getTokenName());
     }
     if (token) {

@@ -12,4 +12,5 @@ public class Constants {
     public static final Long JWT_REDIS_EXPIRE_TIME = 7 * 24 * 60 * 60L;
 
     public static final Long DEFAULT_JWT_REDIS_EXPIRE_TIME = 3 * 60L;
+    public static final int DEFAULT_PAGE_SIZE = 10;
 }

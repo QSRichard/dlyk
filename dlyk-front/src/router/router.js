@@ -20,6 +20,12 @@ const router = createRouter({
                     path: 'user',
                     // 路由页面
                     component: () => import('../view/UserView.vue'),
+                },
+                {
+                    // 路由路径 子路由不能由/开头  id 是动态变量
+                    path: 'user/:id',
+                    // 路由对应页面
+                    component: () => import('../view/UserDetailView.vue'),
                 }
             ]
         }
