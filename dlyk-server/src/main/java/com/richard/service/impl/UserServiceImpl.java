@@ -5,8 +5,10 @@ import com.github.pagehelper.PageInfo;
 import com.richard.constant.Constants;
 import com.richard.mapper.TUserMapper;
 import com.richard.model.TUser;
+import com.richard.query.UserQuery;
 import com.richard.service.UserService;
 import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -48,5 +50,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public TUser getUserDetailById(Integer id) {
         return userMapper.selectDetailById(id);
+    }
+
+    @Override
+    public int saveUser(UserQuery userQuery) {
+        TUser user = new TUser();
+
+        System.out.println(userQuery);
+        // spring 提供的工具类 将对象属性拷贝到另一个对象中（需要 两个对象的 属性名和属性类型相同）
+        BeanUtils.copyProperties(userQuery, user);
+        return userMapper.insert(user);
     }
 }

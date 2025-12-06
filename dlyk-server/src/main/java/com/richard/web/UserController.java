@@ -3,13 +3,11 @@ package com.richard.web;
 
 import com.github.pagehelper.PageInfo;
 import com.richard.model.TUser;
+import com.richard.query.UserQuery;
 import com.richard.result.R;
 import com.richard.service.UserService;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -51,5 +49,16 @@ public class UserController {
         TUser user = userService.getUserDetailById(id);
         return R.OK(user);
 
+    }
+
+    @PostMapping(value = "/api/user/create")
+    public R addUser(UserQuery userQuery) {
+
+        System.out.println("UserQuery=-===============" + userQuery);
+        int save = userService.saveUser(userQuery);
+        if (save >= 1) {
+            return R.OK("SUCCESS");
+        }
+        return R.Fail("FAIL");
     }
 }
