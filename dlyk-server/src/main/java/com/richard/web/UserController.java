@@ -52,9 +52,12 @@ public class UserController {
     }
 
     @PostMapping(value = "/api/user/create")
-    public R addUser(UserQuery userQuery) {
+    public R addUser(UserQuery userQuery, @RequestHeader(value = "Authorization") String token) {
 
+        userQuery.setToken(token);
         System.out.println("UserQuery=-===============" + userQuery);
+
+
         int save = userService.saveUser(userQuery);
         if (save >= 1) {
             return R.OK("SUCCESS");

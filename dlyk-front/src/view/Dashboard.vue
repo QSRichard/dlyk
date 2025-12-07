@@ -24,6 +24,10 @@ export default defineComponent({
       isCollapse: false,
       // 登录人信息
       user: {},
+
+
+      // 控制页面是否显示
+      isRouterAlive: true,
     }
   },
 
@@ -31,6 +35,20 @@ export default defineComponent({
   mounted(): any {
     // 加载当前用户
     this.loadLoginUser()
+  },
+
+  // 提供多级页面穿透，子页面可以使用父页面的值和函数，只能使用父页面的函数修改父页面的变量
+  provide() {
+    return {
+      reload: () => {
+        this.isRouterAlive = false; // 将页面隐藏
+
+        // 当数据更新了，在DOM重新渲染后 执行 nextTick 函数
+        this.$nextTick(function () {
+          this.isRouterAlive = true; // 将页面显示
+        })
+      },
+    }
   },
 
 
@@ -252,10 +270,11 @@ export default defineComponent({
 
       </el-header>
 
-
       <el-main>
-        <router-view></router-view>
+        <router-view v-if="isRouterAlive"></router-view>
       </el-main>
+
+
       <el-footer>@版权所有 动力节点</el-footer>
     </el-container>
   </el-container>

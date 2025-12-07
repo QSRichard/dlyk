@@ -214,6 +214,9 @@ export default defineComponent({
     }
   },
 
+  // 子页面使用inject 使用父页面的数据或函数
+  inject: ['reload'],
+
   mounted() {
     this.getUserDataList(1)
   },
@@ -254,6 +257,9 @@ export default defineComponent({
                 console.log(resp)
                 if (resp.data.code === 200) {
                   messageTip("提交成功", 'success')
+
+                  // 刷新页面
+                  this.reload();
                 } else {
                   messageTip("提交失败", 'error')
                 }

@@ -3,7 +3,7 @@ package com.richard.query;
 import lombok.Data;
 
 @Data
-public class UserQuery {
+public class UserQuery extends BaseQuery {
 
     /**
      * 主键，自动增长，用户ID
@@ -55,6 +55,6 @@ public class UserQuery {
      * 账号是否启用，0禁用 1启用
      */
     private Integer accountEnabled;
-    
+
 
 }
