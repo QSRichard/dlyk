@@ -200,7 +200,7 @@
             <if test="loginAct != null">
                 login_act = #{loginAct,jdbcType=VARCHAR},
             </if>
-            <if test="loginPwd != null">
+            <if test="loginPwd != null and loginPwd != ''">
                 login_pwd = #{loginPwd,jdbcType=VARCHAR},
             </if>
             <if test="name != null">

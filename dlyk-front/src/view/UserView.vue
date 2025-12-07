@@ -4,7 +4,6 @@
 
   <el-table
       :data="userList"
-      row-key="id"
       style="width: 100%"
       @selection-change="handleSelectionChange"
   >
@@ -14,13 +13,13 @@
 
     <el-table-column property="loginAct" label="账号"/>
 
-    <el-table-column property="name" label="姓名"/>
+    <el-table-column property="name" label="姓名" show-overflow-tooltip/>
 
-    <el-table-column property="phone" label="手机"/>
+    <el-table-column property="phone" label="手机" show-overflow-tooltip/>
 
-    <el-table-column property="email" label="邮箱"/>
+    <el-table-column property="email" label="邮箱" show-overflow-tooltip/>
 
-    <el-table-column property="createTime" label="创建时间"/>
+    <el-table-column property="createTime" label="创建时间" show-overflow-tooltip/>
 
     <el-table-column label="操作" show-overflow-tooltip>
       <template #default="scope">
@@ -44,7 +43,7 @@
   <!- 新增用户对话框 -->
   <el-dialog
       v-model="userDialogOverflowVisible"
-      title="新增用户"
+      :title="userQuery.id > 0 ? '编辑用户' : '新增用户' "
       width="55%"
       draggable
       overflow
@@ -54,7 +53,13 @@
       <el-form-item label="账号" prop="loginAct">
         <el-input v-model="userQuery.loginAct"/>
       </el-form-item>
-      <el-form-item label="密码" prop="loginPwd">
+
+
+      <el-form-item label="密码" v-if="userQuery.id > 0">
+        <el-input type="password" v-model="userQuery.loginPwd"/>
+      </el-form-item>
+
+      <el-form-item label="密码" prop="loginPwd" v-else>
         <el-input type="password" v-model="userQuery.loginPwd"/>
       </el-form-item>
 
@@ -73,32 +78,44 @@
 
       <el-form-item label="账号未过期" prop="accountNoExpired">
         <el-select v-model="userQuery.accountNoExpired" placeholder="请选择" style="width: 240px">
-          <el-option label="是" value="1"/>
-          <el-option label="否" value="0"/>
+          <el-option
+              v-for="item in options"
+              :v-key="item.value"
+              :label="item.label"
+              :value="item.value"/>
         </el-select>
       </el-form-item>
 
 
       <el-form-item label="密码未过期" prop="credentialsNoExpired">
         <el-select v-model="userQuery.credentialsNoExpired" placeholder="请选择" style="width: 240px">
-          <el-option label="是" value="1"/>
-          <el-option label="否" value="0"/>
+          <el-option
+              v-for="item in options"
+              :v-key="item.value"
+              :label="item.label"
+              :value="item.value"/>
         </el-select>
       </el-form-item>
 
 
       <el-form-item label="账号未锁定" prop="accountNoLocked">
         <el-select v-model="userQuery.accountNoLocked" placeholder="请选择" style="width: 240px">
-          <el-option label="是" value="1"/>
-          <el-option label="否" value="0"/>
+          <el-option
+              v-for="item in options"
+              :v-key="item.value"
+              :label="item.label"
+              :value="item.value"/>
         </el-select>
       </el-form-item>
 
 
       <el-form-item label="账号是否启用" prop="accountEnabled">
         <el-select v-model="userQuery.accountEnabled" placeholder="请选择" style="width: 240px">
-          <el-option label="是" value="1"/>
-          <el-option label="否" value="0"/>
+          <el-option
+              v-for="item in options"
+              :v-key="item.value"
+              :label="item.label"
+              :value="item.value"/>
         </el-select>
       </el-form-item>
 
@@ -131,7 +148,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {doGet, doPost} from '../http/httpRequest'
+import {doGet, doPost, doPut} from '../http/httpRequest'
 import {messageTip} from '../utils/message'
 
 export default defineComponent({
@@ -210,7 +227,16 @@ export default defineComponent({
             required: true, message: '请选择账号是否启用', trigger: 'blur'
           }
         ],
-      }
+      },
+
+      options: [
+        {
+          label: '是', value: 1
+        },
+        {
+          label: '否', value: 0
+        }
+      ],
     }
   },
 
@@ -228,6 +254,7 @@ export default defineComponent({
     },
     getUserDataList(current) {
       doGet("/api/users", {current: current}).then(resp => {
+        console.log(resp)
         if (resp.data.code === 200) {
           this.userList = resp.data.data.list;
           this.pageSize = resp.data.data.pageSize;
@@ -244,27 +271,52 @@ export default defineComponent({
     // 新增用户提交
     userSubmit() {
       let formData = new FormData();
-      for (let field in this.userQuery) {
-        formData.append(field, this.userQuery[field])
+
+      // 只添加明确需要的字段，且确保值是 string/number/boolean
+      const fields = ['id', 'loginAct', 'loginPwd', 'name', 'phone', 'email',
+        'accountNoExpired', 'credentialsNoExpired', 'accountNoLocked', 'accountEnabled'];
+
+      for (let field of fields) {
+        // console.log(field)
+        // formData.append(field, this.userQuery[field])
+        if (this.userQuery[field] !== undefined && this.userQuery[field] !== null) {
+          formData.append(field, String(this.userQuery[field]))
+        }
       }
 
-      console.log(formData)
+      // console.log("fromData")
+      // console.log(formData)
       // 验证通过才提交
       this.$refs.addUserRefForm.validate((isvalid) => {
         if (isvalid) {
-          doPost("/api/user/create", formData).then(
-              resp => {
-                console.log(resp)
-                if (resp.data.code === 200) {
-                  messageTip("提交成功", 'success')
-
-                  // 刷新页面
-                  this.reload();
-                } else {
-                  messageTip("提交失败", 'error')
+          if (this.userQuery.id > 0) {  // 编辑用户
+            doPut("/api/user/edit", formData).then(
+                resp => {
+                  console.log(resp)
+                  if (resp.data.code === 200) {
+                    messageTip("编辑成功", 'success')
+                    // 刷新页面
+                    this.reload();
+                  } else {
+                    messageTip("编辑失败", 'error')
+                  }
                 }
-              }
-          )
+            )
+          } else { // 新增用户
+            doPost("/api/user/create", formData).then(
+                resp => {
+                  console.log(resp)
+                  if (resp.data.code === 200) {
+                    messageTip("提交成功", 'success')
+
+                    // 刷新页面
+                    this.reload();
+                  } else {
+                    messageTip("提交失败", 'error')
+                  }
+                }
+            )
+          }
         }
         console.log(isvalid)
       })
@@ -276,16 +328,33 @@ export default defineComponent({
       // 跳转到 用户详情页路由
       this.$router.push("/dashboard/user/" + id)
     },
-    edit(id) {
-
-    },
     del(id) {
 
     },
 
 
+    // 点击新增 弹出对话框
     addUser() {
       this.userDialogOverflowVisible = true;
+      this.userQuery = {};
+    },
+
+    // 点击编辑 弹出对话框
+    edit(id) {
+      this.userDialogOverflowVisible = true;
+      this.loadUserInfo(id)
+    },
+
+    loadUserInfo(id) {
+      doGet("/api/user/" + id, {}).then(
+          resp => {
+            console.log(resp)
+            if (resp.data.code === 200) {
+              this.userQuery = resp.data.data;
+              this.userQuery.loginPwd = "";
+            }
+          }
+      )
     }
   }
 })

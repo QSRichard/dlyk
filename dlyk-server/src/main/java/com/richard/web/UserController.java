@@ -57,8 +57,20 @@ public class UserController {
         userQuery.setToken(token);
         System.out.println("UserQuery=-===============" + userQuery);
 
-
         int save = userService.saveUser(userQuery);
+        if (save >= 1) {
+            return R.OK("SUCCESS");
+        }
+        return R.Fail("FAIL");
+    }
+
+    @PutMapping(value = "/api/user/edit")
+    public R editUser(UserQuery userQuery, @RequestHeader(value = "Authorization") String token) {
+        
+        userQuery.setToken(token);
+        System.out.println("UserQuery=-===============" + userQuery);
+
+        int save = userService.updateUser(userQuery);
         if (save >= 1) {
             return R.OK("SUCCESS");
         }

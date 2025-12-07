@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -75,5 +76,29 @@ public class UserServiceImpl implements UserService {
         user.setCreateBy(createId);
 
         return userMapper.insert(user);
+    }
+
+
+    @Override
+    public int updateUser(UserQuery userQuery) {
+        TUser user = new TUser();
+
+        System.out.println(userQuery);
+
+        // spring 提供的工具类 将对象属性拷贝到另一个对象中（需要 两个对象的 属性名和属性类型相同）
+        BeanUtils.copyProperties(userQuery, user);
+
+        // 重新设置密码
+        if (StringUtils.hasText(userQuery.getLoginPwd())) {
+            user.setLoginPwd(passwordEncoder.encode(userQuery.getLoginPwd()));
+        }
+
+        user.setEditTime(new Date());
+
+        // 设置创建人ID
+        Integer editId = JWTUtils.parseTUserFromJWT(userQuery.getToken()).getId();
+        user.setEditBy(editId);
+
+        return userMapper.updateByPrimaryKeySelective(user);
     }
 }

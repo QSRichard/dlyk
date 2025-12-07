@@ -12,4 +12,6 @@ public interface UserService extends UserDetailsService {
     TUser getUserDetailById(Integer id);
 
     int saveUser(UserQuery user);
+
+    int updateUser(UserQuery user);
 }

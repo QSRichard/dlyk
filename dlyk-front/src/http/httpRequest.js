@@ -23,10 +23,6 @@ export function doDelete(url, params) {
             params: params,
             dataType: "json"
         }
-    ).then(
-        function () {
-
-        }
     )
 }
 
@@ -48,10 +44,6 @@ export function doPut(url, data) {
             url: url,
             data: data,
             dataType: "json"
-        }
-    ).then(
-        function () {
-
         }
     )
 }
