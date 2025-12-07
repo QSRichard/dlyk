@@ -1,6 +1,6 @@
 <template>
   <el-button type="primary" @click="addUser">添加用户</el-button>
-  <el-button type="danger">批量删除</el-button>
+  <el-button type="danger" @click="batchDel">批量删除</el-button>
 
   <el-table
       :data="userList"
@@ -148,8 +148,8 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {doGet, doPost, doPut} from '../http/httpRequest'
-import {messageTip} from '../utils/message'
+import {doDelete, doGet, doPost, doPut} from '../http/httpRequest'
+import {messageConfirm, messageTip} from '../utils/message'
 
 export default defineComponent({
   name: "UserView",
@@ -237,6 +237,8 @@ export default defineComponent({
           label: '否', value: 0
         }
       ],
+
+      selectUserIdList: [],
     }
   },
 
@@ -249,8 +251,15 @@ export default defineComponent({
 
   methods: {
     // 勾选或者取消勾选 触发该函数
-    handleSelectionChange() {
+    // ele 官方注入 将选择的数据放入 函数参数中
+    handleSelectionChange(selectItemArray) {
+      console.log(selectItemArray)
 
+      this.selectUserIdList = [];
+      selectItemArray.forEach(data => {
+        let id = data.id;
+        this.selectUserIdList.push(id);
+      })
     },
     getUserDataList(current) {
       doGet("/api/users", {current: current}).then(resp => {
@@ -329,7 +338,18 @@ export default defineComponent({
       this.$router.push("/dashboard/user/" + id)
     },
     del(id) {
-
+      messageConfirm("确认删除?").then(() => {
+        doDelete("/api/user/delete/" + id, {}).then(resp => {
+          if (resp.data.code === 200) {
+            messageTip("删除成功", 'success')
+            this.reload();
+          } else {
+            messageTip("删除失败, 原因 " + resp.data.msg, 'error')
+          }
+        })
+      }).catch(() => {
+        messageTip("取消删除", 'warning')
+      })
     },
 
 
@@ -355,6 +375,34 @@ export default defineComponent({
             }
           }
       )
+    },
+
+    batchDel() {
+
+      if (this.selectUserIdList.length <= 0) {
+        messageTip("请选择删除数据", 'warning');
+        return;
+      }
+
+      // 将数字数组转为字符串
+      let ids = this.selectUserIdList.join(",")
+
+
+      messageConfirm("确认批量删除?").then(() => {
+
+        doDelete("/api/user/batch/del", {
+          ids: ids
+        }).then(resp => {
+          if (resp.data.code === 200) {
+            messageTip("批量删除成功", 'success')
+            this.reload();
+          } else {
+            messageTip("批量删除失败, 原因 " + resp.data.msg, 'error')
+          }
+        })
+      }).catch(() => {
+        messageTip("取消批量删除", 'warning')
+      })
     }
   }
 })

@@ -9,6 +9,9 @@ import com.richard.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 public class UserController {
 
@@ -66,7 +69,7 @@ public class UserController {
 
     @PutMapping(value = "/api/user/edit")
     public R editUser(UserQuery userQuery, @RequestHeader(value = "Authorization") String token) {
-        
+
         userQuery.setToken(token);
         System.out.println("UserQuery=-===============" + userQuery);
 
@@ -75,5 +78,25 @@ public class UserController {
             return R.OK("SUCCESS");
         }
         return R.Fail("FAIL");
+    }
+
+    @DeleteMapping(value = "/api/user/delete/{id}")
+    public R deleteUser(@PathVariable Integer id) {
+
+        System.out.println("/api/user/delete/" + id);
+        int del = userService.deleteUserById(id);
+
+        return del >= 1 ? R.OK("SUCCESS") : R.Fail("FAIL");
+    }
+
+
+    @DeleteMapping(value = "/api/user/batch/del")
+    public R deleteUser(@RequestParam(value = "ids") String ids) {
+
+
+        List<String> idList = Arrays.asList(ids.split(","));
+        int del = userService.batchDeleteUserByIds(idList);
+
+        return del >= idList.size() ? R.OK("SUCCESS") : R.Fail("FAIL");
     }
 }

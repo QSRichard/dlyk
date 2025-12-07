@@ -90,6 +90,17 @@
         from t_user
         where id = #{id,jdbcType=INTEGER}
     </delete>
+
+
+    <delete id="batchDeleteByPrimaryKeys" parameterType="java.lang.Integer">
+        delete
+        from t_user
+        where id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id,jdbcType=INTEGER}
+        </foreach>
+    </delete>
+
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.richard.model.TUser" useGeneratedKeys="true">
         insert into t_user (login_act, login_pwd, `name`,
                             phone, email, account_no_expired,
