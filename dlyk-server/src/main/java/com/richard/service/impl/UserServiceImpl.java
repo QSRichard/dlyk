@@ -3,8 +3,11 @@ package com.richard.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.richard.constant.Constants;
+import com.richard.mapper.TRoleMapper;
 import com.richard.mapper.TUserMapper;
+import com.richard.model.TRole;
 import com.richard.model.TUser;
+import com.richard.query.BaseQuery;
 import com.richard.query.UserQuery;
 import com.richard.service.UserService;
 import com.richard.utils.JWTUtils;
@@ -16,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +34,9 @@ public class UserServiceImpl implements UserService {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+    @Resource
+    private TRoleMapper roleMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -38,6 +45,16 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("登录账号不存在");
         }
+
+        List<TRole> roleList = roleMapper.selectByUserId(user.getId());
+
+        List<String> roleListStr = new ArrayList<>();
+
+        roleList.forEach(role -> {
+            roleListStr.add(role.getRole());
+        });
+        user.setRoles(roleListStr);
+        
         System.out.println(user);
         return user;
     }
@@ -48,7 +65,7 @@ public class UserServiceImpl implements UserService {
         // 1 设置PageHelper
         PageHelper.startPage(current, Constants.DEFAULT_PAGE_SIZE);
 
-        List<TUser> userList = userMapper.selectUserByPage();
+        List<TUser> userList = userMapper.selectUserByPage(BaseQuery.builder().build());
 
         PageInfo<TUser> pageInfo = new PageInfo<>(userList);
         return pageInfo;

@@ -13,4 +13,7 @@ public class Constants {
 
     public static final Long DEFAULT_JWT_REDIS_EXPIRE_TIME = 3 * 60L;
     public static final int DEFAULT_PAGE_SIZE = 10;
+
+
+    public static final String DEFAULT_TOKEN_NAME = "Authorization";
 }

@@ -73,6 +73,9 @@
         select
         <include refid="Base_Column_List"/>
         from t_user
+        <where>
+            ${filterSql}
+        </where>
     </select>
 
 

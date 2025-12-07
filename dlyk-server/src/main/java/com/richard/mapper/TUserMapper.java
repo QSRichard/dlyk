@@ -1,6 +1,8 @@
 package com.richard.mapper;
 
+import com.richard.commons.DataScope;
 import com.richard.model.TUser;
+import com.richard.query.BaseQuery;
 
 import java.util.List;
 
@@ -19,7 +21,8 @@ public interface TUserMapper {
 
     TUser selectByLoginAct(String username);
 
-    List<TUser> selectUserByPage();
+    @DataScope(tableAlias = "tu", tableField = "id")
+    List<TUser> selectUserByPage(BaseQuery query);
 
     TUser selectDetailById(Integer id);
 
