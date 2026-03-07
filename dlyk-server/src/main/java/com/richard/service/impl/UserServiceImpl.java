@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             roleListStr.add(role.getRole());
         });
         user.setRoles(roleListStr);
-        
+
         System.out.println(user);
         return user;
     }
@@ -127,5 +127,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public int batchDeleteUserByIds(List<String> ids) {
         return userMapper.batchDeleteByPrimaryKeys(ids);
+    }
+
+    @Override
+    public List<TUser> getOwnerList() {
+        // 从redis中查询
+        // redis 查询不到 去数据库查
+        // 数据库查完之后 放入redis
+        return List.of();
     }
 }

@@ -4,9 +4,14 @@
       <el-select
           v-model="activityQuery.ownerId"
           placeholder="请选择负责人"
+          @click="loadOwners"
           clearable>
-        <el-option label="Zone one" value="shanghai"/>
-        <el-option label="Zone two" value="beijing"/>
+        <el-option
+            v-for="item in ownerOptions"
+            :v-key="item.id"
+            :label="item.name"
+            :value="item.id"/>
+      </el-select>
       </el-select>
     </el-form-item>
 
@@ -113,6 +118,9 @@ export default defineComponent({
       pageSize: 0,
 
       total: 0,
+
+      // 负责人下拉列表数据
+      ownerOptions: [{}]
     }
 
   },
@@ -135,6 +143,16 @@ export default defineComponent({
 
     toPage(current) {
       this.getData(current)
+    },
+
+    // 加载负责人
+    loadOwners() {
+      doGet("/api/owner", {}).then(resp => {
+        console.log(resp)
+        if (resp.data.code === 200) {
+          this.ownerOptions = resp.data.data;
+        }
+      })
     }
   },
 

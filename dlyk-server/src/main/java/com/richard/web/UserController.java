@@ -54,6 +54,12 @@ public class UserController {
 
     }
 
+    @GetMapping(value = "/api/owner")
+    public R owner() {
+        List<TUser> userList = userService.getOwnerList();
+        return R.OK(userList);
+    }
+
     @PostMapping(value = "/api/user/create")
     public R addUser(UserQuery userQuery, @RequestHeader(value = "Authorization") String token) {
 
