@@ -7,7 +7,6 @@ import com.richard.model.TUser;
 import com.richard.query.BaseQuery;
 import com.richard.utils.JWTUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -27,7 +26,7 @@ public class DataScopeAspect {
 
     // 切入点
     @Pointcut(value = "@annotation(com.richard.commons.DataScope)")
-    private void pointCut(JoinPoint joinPoint) {
+    private void pointCut() {
 
     }
 
@@ -36,7 +35,10 @@ public class DataScopeAspect {
     // 连接点
     public Object process(ProceedingJoinPoint joinPoint) throws Throwable {
 
+        // 反射拿到方法签名
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+
+        // 拿到注解
         DataScope dataScope = methodSignature.getMethod().getAnnotation(DataScope.class);
 
         String tableAlias = dataScope.tableAlias();

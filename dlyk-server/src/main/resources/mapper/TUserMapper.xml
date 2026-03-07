@@ -72,7 +72,7 @@
     <select id="selectUserByPage" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_user
+        from t_user tu
         <where>
             ${filterSql}
         </where>
