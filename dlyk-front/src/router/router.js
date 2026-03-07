@@ -26,6 +26,10 @@ const router = createRouter({
                     path: 'user/:id',
                     // 路由对应页面
                     component: () => import('../view/UserDetailView.vue'),
+                },
+                {
+                    path: 'activity',
+                    component: () => import('../view/ActivityView.vue'),
                 }
             ]
         }

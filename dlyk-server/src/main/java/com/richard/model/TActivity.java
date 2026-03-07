@@ -1,9 +1,10 @@
 package com.richard.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 市场活动表
@@ -65,6 +66,8 @@ public class TActivity implements Serializable {
      * 活动编辑人
      */
     private Integer editBy;
+
+    private TUser ownerDo;
 
     private static final long serialVersionUID = 1L;
 }
