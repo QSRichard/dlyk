@@ -1,7 +1,8 @@
 <template>
-  <el-form :inline="true" :model="activityQuery" class="demo-form-inline">
+  <el-form :inline="true" :model="activityQuery" :rules="activityRules">
     <el-form-item label="负责人">
       <el-select
+          class="ownerQuery"
           v-model="activityQuery.ownerId"
           placeholder="请选择负责人"
           @click="loadOwners"
@@ -12,29 +13,25 @@
             :label="item.name"
             :value="item.id"/>
       </el-select>
-      </el-select>
     </el-form-item>
 
 
     <el-form-item label="活动名称">
-      <el-input v-model="activityQuery.user" placeholder="请输入活动名称" clearable/>
+      <el-input v-model="activityQuery.name" placeholder="请输入活动名称" clearable/>
     </el-form-item>
 
 
     <el-form-item label="活动时间">
       <el-date-picker
-          v-model="activityQuery.startTime"
+          v-model="activityQuery.activityTime"
           type="datetimerange"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
-          format="YYYY-MM-DD HH:mm:ss"
-          date-format="YYYY/MM/DD ddd"
-          time-format="A hh:mm:ss"
-      />
+          value-format="YYYY-MM-DD HH:mm:ss"/>
     </el-form-item>
 
-    <el-form-item label="活动预算">
-      <el-input v-model="activityQuery.user" placeholder="请输入活动预算" clearable/>
+    <el-form-item label="活动预算" prop="cost">
+      <el-input v-model="activityQuery.cost" placeholder="请输入活动预算" clearable/>
     </el-form-item>
 
 
@@ -43,6 +40,7 @@
           v-model="activityQuery.createTime"
           type="datetime"
           placeholder="请选择活动时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
       />
     </el-form-item>
 
@@ -120,7 +118,13 @@ export default defineComponent({
       total: 0,
 
       // 负责人下拉列表数据
-      ownerOptions: [{}]
+      ownerOptions: [{}],
+
+      activityRules: {
+        cost: [
+          {pattern: /^[0-9]+(\.[0-9]{2})?$/, message: '活动预算必须是整数或者两位小数', trigger: 'blur'}
+        ]
+      }
     }
 
   },
@@ -131,7 +135,28 @@ export default defineComponent({
 
   methods: {
     getData(current) {
-      doGet("/api/activity", {current: current}).then(resp => {
+      let startTime = '';
+      let endTime = '';
+      console.log(this.activityQuery.activityTime)
+      for (let key in this.activityQuery.activityTime) {
+        if (key === '0') {
+          startTime = this.activityQuery.activityTime[key]
+        }
+        if (key === '1') {
+          endTime = this.activityQuery.activityTime[key]
+        }
+      }
+      console.log(startTime)
+      console.log(endTime)
+      doGet("/api/activity", {
+        current: current,
+        ownerId: this.activityQuery.ownerId,
+        name: this.activityQuery.name,
+        startTime: startTime,
+        endTime: endTime,
+        cost: this.activityQuery.cost,
+        createTime: this.activityQuery.createTime
+      }).then(resp => {
         console.log(resp)
         if (resp.data.code === 200) {
           this.activityList = resp.data.data.list;
@@ -141,6 +166,16 @@ export default defineComponent({
       })
     },
 
+    onSearch() {
+      this.getData(1)
+    },
+
+
+    onReset() {
+      this.activityQuery = {}
+    },
+
+
     toPage(current) {
       this.getData(current)
     },
@@ -148,12 +183,16 @@ export default defineComponent({
     // 加载负责人
     loadOwners() {
       doGet("/api/owner", {}).then(resp => {
-        console.log(resp)
+        console.log(resp.data.data)
         if (resp.data.code === 200) {
           this.ownerOptions = resp.data.data;
         }
       })
-    }
+    },
+
+    add() {
+      this.$router.push("/dashboard/activity/add")
+    },
   },
 
   // curren 当前页 参数值由 ele-plus 组件传
@@ -173,5 +212,9 @@ export default defineComponent({
 
 .el-pagination {
   margin-top: 12px;
+}
+
+.ownerQuery {
+  width: 150px;
 }
 </style>

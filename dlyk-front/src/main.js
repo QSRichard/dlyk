@@ -8,7 +8,9 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // 导入css样式文件
 import 'element-plus/dist/index.css'
 import router from "./router/router.js";
-import App from "./App.vue"; // 根组件 其余页面根据路由地址显示
+import App from "./App.vue";
+import zhCn from "element-plus/dist/locale/zh-cn.mjs"; // 根组件 其余页面根据路由地址显示
+
 
 let app = createApp(App);
 
@@ -16,4 +18,4 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
-app.use(ElementPlus).use(router).mount('#app')
+app.use(ElementPlus, {locale: zhCn}).use(router).mount('#app')

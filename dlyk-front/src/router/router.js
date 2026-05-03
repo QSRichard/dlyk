@@ -30,6 +30,10 @@ const router = createRouter({
                 {
                     path: 'activity',
                     component: () => import('../view/ActivityView.vue'),
+                },
+                {
+                    path: 'activity/add',
+                    component: () => import('../view/ActivityRecordView.vue'),
                 }
             ]
         }
