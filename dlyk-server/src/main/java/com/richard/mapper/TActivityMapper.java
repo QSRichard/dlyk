@@ -2,7 +2,7 @@ package com.richard.mapper;
 
 import com.richard.commons.DataScope;
 import com.richard.model.TActivity;
-import com.richard.query.BaseQuery;
+import com.richard.query.ActivityQuery;
 
 import java.util.List;
 
@@ -20,5 +20,5 @@ public interface TActivityMapper {
     int updateByPrimaryKey(TActivity record);
 
     @DataScope(tableAlias = "ta", tableField = "owner_id")
-    List<TActivity> selectActivityByPage(BaseQuery build);
+    List<TActivity> selectActivityByPage(ActivityQuery build);
 }

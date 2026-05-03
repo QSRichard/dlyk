@@ -3,6 +3,7 @@ package com.richard.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.richard.constant.Constants;
+import com.richard.manger.RedisManger;
 import com.richard.mapper.TRoleMapper;
 import com.richard.mapper.TUserMapper;
 import com.richard.model.TRole;
@@ -10,9 +11,11 @@ import com.richard.model.TUser;
 import com.richard.query.BaseQuery;
 import com.richard.query.UserQuery;
 import com.richard.service.UserService;
+import com.richard.utils.CacheUtils;
 import com.richard.utils.JWTUtils;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +38,14 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Resource
+    private RedisManger redisManger;
+
+    @Resource
     private TRoleMapper roleMapper;
+
+
+    @Autowired
+    private TUserMapper tUserMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -134,6 +144,15 @@ public class UserServiceImpl implements UserService {
         // 从redis中查询
         // redis 查询不到 去数据库查
         // 数据库查完之后 放入redis
-        return List.of();
+
+        return CacheUtils.getCacheData(() -> {
+
+            // 生产 从redis 中获取数据
+            return (List<TUser>) redisManger.getValue(Constants.REDIS_OWNER_KEY);
+        }, () -> {
+            return tUserMapper.selectByOwner();
+        }, (t) -> {
+            redisManger.setValue(Constants.REDIS_OWNER_KEY, t);
+        });
     }
 }

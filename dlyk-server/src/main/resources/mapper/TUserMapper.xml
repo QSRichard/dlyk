@@ -86,6 +86,11 @@
                  left join t_user tu3 on tu.edit_by = tu3.id
         where tu.id = #{id,jdbcType=INTEGER}
     </select>
+    <select id="selectByOwner" resultType="com.richard.model.TUser">
+        select id,
+               name
+        from t_user
+    </select>
 
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
