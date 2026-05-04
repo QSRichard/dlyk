@@ -69,5 +69,9 @@ public class TActivity implements Serializable {
 
     private TUser ownerDo;
 
+    private TUser createByDo;
+
+    private TUser editByDo;
+
     private static final long serialVersionUID = 1L;
 }

@@ -110,8 +110,6 @@ public class UserServiceImpl implements UserService {
     public int updateUser(UserQuery userQuery) {
         TUser user = new TUser();
 
-        System.out.println(userQuery);
-
         // spring 提供的工具类 将对象属性拷贝到另一个对象中（需要 两个对象的 属性名和属性类型相同）
         BeanUtils.copyProperties(userQuery, user);
 

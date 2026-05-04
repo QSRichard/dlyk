@@ -10,13 +10,11 @@ import java.util.Date;
 @Data
 public class ActivityQuery extends BaseQuery {
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date endTime;
+    private Integer id;
 
     private Integer ownerId;
 
     private String name;
-
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
@@ -24,6 +22,9 @@ public class ActivityQuery extends BaseQuery {
     // 前端传的是yyyy-MM-dd HH:mm:ss 格式的字符串，使用DateTimeFormat 注解转为Date类型
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date endTime;
 
     private BigDecimal cost;
 

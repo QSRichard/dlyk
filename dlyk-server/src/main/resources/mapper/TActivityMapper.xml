@@ -32,7 +32,17 @@
             <id column="ownerId" jdbcType="INTEGER" property="id"/>
             <result column="ownerName" jdbcType="VARCHAR" property="name"/>
         </association>
+        <association property="createByDo" javaType="com.richard.model.TUser">
+            <id column="createById" jdbcType="INTEGER" property="id"/>
+            <result column="createByName" jdbcType="VARCHAR" property="name"/>
+        </association>
+
+        <association property="editByDo" javaType="com.richard.model.TUser">
+            <id column="editById" jdbcType="INTEGER" property="id"/>
+            <result column="editByName" jdbcType="VARCHAR" property="name"/>
+        </association>
     </resultMap>
+
 
     <sql id="Base_Column_List">
         id
@@ -75,6 +85,24 @@
         from t_activity
         where id = #{id,jdbcType=INTEGER}
     </select>
+
+
+    <select id="selectDetailByPrimaryKey" parameterType="java.lang.Integer" resultMap="ActivityResultMap">
+        select ta.*,
+               tu1.id   as ownerId,
+               tu1.name as ownerName,
+               tu2.id   as createId,
+               tu2.name as createName,
+               tu3.id   as editId,
+               tu3.name as editName
+        from t_activity ta
+                 left join t_user tu1 on ta.owner_id = tu1.id
+                 left join t_user tu2 on ta.create_by = tu2.id
+                 left join t_user tu3 on ta.edit_by = tu3.id
+        where ta.id = #{id,jdbcType=INTEGER}
+
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from t_activity

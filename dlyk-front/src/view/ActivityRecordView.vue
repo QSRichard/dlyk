@@ -64,7 +64,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {doGet, doPost} from '../http/httpRequest'
+import {doGet, doPost, doPut} from '../http/httpRequest'
 import {messageTip} from '../utils/message'
 
 export default defineComponent({
@@ -120,7 +120,12 @@ export default defineComponent({
 
   mounted(): any {
 
-    this.loadOwners()
+    this.loadOwners();
+
+
+    // 页面渲染时 渲染活动信息
+    // 由于编辑和提交公用一个页面 需要判断
+    this.loadActivity();
   },
   methods: {
     // 加载负责人
@@ -132,30 +137,68 @@ export default defineComponent({
         }
       })
     },
+
+
+    loadActivity() {
+
+      let id = this.$route.params.id;
+
+      // id 存在表示是编辑场景
+      if (id) {
+        doGet("/api/activity/" + id, {}).then(resp => {
+          if (resp.data.code === 200) {
+            this.activityQuery = resp.data.data;
+          }
+
+        })
+      }
+
+    },
+
+
     goBack() {
       this.$router.go(-1)
     },
 
     activitySubmit() {
-      let formDta = new FormData();
+      let formData = new formData();
       for (let field in this.activityQuery) {
-        formDta.append(field, this.activityQuery[field])
+        // console.log(field + " --- " + this.activityQuery[field])
+        if (this.activityQuery[field]) {
+          formData.append(field, this.activityQuery[field])
+        }
       }
 
+      console.log(this.activityQuery)
       this.$refs.activityRefForm.validate((isvalid) => {
         if (isvalid) {
-          doPost("/api/activity", formDta).then(
-              resp => {
-                console.log(resp)
-                if (resp.data.code === 200) {
-                  messageTip("提交成功", 'success')
-                  // 刷新页面
-                  this.$router.push("/dashboard/activity");
-                } else {
-                  messageTip("提交失败", 'error')
+          if (this.activityQuery.id > 0) {
+            // console.log(Object.fromEntries(formData));
+            doPut("/api/activity/edit", formData).then(
+                resp => {
+                  if (resp.data.code === 200) {
+                    messageTip("编辑成功", 'success')
+                    // 刷新页面
+                    this.$router.push("/dashboard/activity");
+                  } else {
+                    messageTip("编辑失败", 'error')
+                  }
                 }
-              }
-          )
+            )
+          } else {
+            // console.log(Object.fromEntries(formData));
+            doPost("/api/activity", formData).then(
+                resp => {
+                  if (resp.data.code === 200) {
+                    messageTip("提交成功", 'success')
+                    // 刷新页面
+                    this.$router.push("/dashboard/activity");
+                  } else {
+                    messageTip("提交失败", 'error')
+                  }
+                }
+            )
+          }
         }
       })
     }

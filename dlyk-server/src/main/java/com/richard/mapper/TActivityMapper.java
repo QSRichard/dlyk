@@ -21,4 +21,6 @@ public interface TActivityMapper {
 
     @DataScope(tableAlias = "ta", tableField = "owner_id")
     List<TActivity> selectActivityByPage(ActivityQuery build);
+
+    TActivity selectDetailByPrimaryKey(Integer id);
 }

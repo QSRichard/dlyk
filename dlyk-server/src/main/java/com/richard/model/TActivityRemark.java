@@ -1,8 +1,9 @@
 package com.richard.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 市场活动备注表
@@ -49,6 +50,10 @@ public class TActivityRemark implements Serializable {
      * 删除状态（0正常，1删除）
      */
     private Integer deleted;
+
+
+    private TUser createByDo;
+    private TUser editByDo;
 
     private static final long serialVersionUID = 1L;
 }

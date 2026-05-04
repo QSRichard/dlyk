@@ -64,7 +64,6 @@ public class UserController {
     public R addUser(UserQuery userQuery, @RequestHeader(value = "Authorization") String token) {
 
         userQuery.setToken(token);
-        System.out.println("UserQuery=-===============" + userQuery);
 
         int save = userService.saveUser(userQuery);
         if (save >= 1) {
@@ -77,7 +76,6 @@ public class UserController {
     public R editUser(UserQuery userQuery, @RequestHeader(value = "Authorization") String token) {
 
         userQuery.setToken(token);
-        System.out.println("UserQuery=-===============" + userQuery);
 
         int save = userService.updateUser(userQuery);
         if (save >= 1) {

@@ -193,6 +193,14 @@ export default defineComponent({
     add() {
       this.$router.push("/dashboard/activity/add")
     },
+
+    edit(id) {
+      this.$router.push("/dashboard/activity/edit/" + id)
+    },
+
+    view(id) {
+      this.$router.push("/dashboard/activity/" + id)
+    }
   },
 
   // curren 当前页 参数值由 ele-plus 组件传

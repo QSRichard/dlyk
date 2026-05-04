@@ -32,3 +32,8 @@ export function messageConfirm(msg) {
         }
     )
 }
+
+// 返回函数
+export function goBack() {
+    this.$router.go(-1);
+}

@@ -48,4 +48,26 @@ public class ActivityServiceImpl implements ActivityService {
         return activityMapper.insertSelective(activity);
     }
 
+    @Override
+    public TActivity getActivityById(Integer id) {
+        return activityMapper.selectDetailByPrimaryKey(id);
+    }
+
+    @Override
+    public int updateActivity(ActivityQuery activityQuery) {
+        TActivity activity = new TActivity();
+
+        // spring 提供的工具类 将对象属性拷贝到另一个对象中（需要 两个对象的 属性名和属性类型相同）
+        BeanUtils.copyProperties(activityQuery, activity);
+
+
+        activity.setEditTime(new Date());
+
+        // 设置更新人ID
+        Integer editId = JWTUtils.parseTUserFromJWT(activityQuery.getToken()).getId();
+        activity.setEditBy(editId);
+
+        return activityMapper.updateByPrimaryKeySelective(activity);
+    }
+
 }
