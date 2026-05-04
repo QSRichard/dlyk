@@ -63,15 +63,57 @@
   />
 
 
+  <el-dialog v-model="importClueExcelDialogVisible" title="导入线索Excel" width="55%" center overflow draggable>
+
+    <el-upload
+        ref="uploadRef"
+        method: post,
+        :http-request="uploadFile"
+        :auto-upload="false"
+    >
+      <template #trigger>
+        <el-button type="primary">选择文件</el-button>
+      </template>
+      仅支持excel文件
+      <template #tip>
+        <div class="filePadding">
+          重要提示：
+          <ul>
+            <li>
+              仅支持上传excel文件
+            </li>
+            <li>
+              文件不超过50MB
+            </li>
+            <li>
+              excel文件第一行视为字段名
+            </li>
+          </ul>
+        </div>
+      </template>
+    </el-upload>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="importClueExcelDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="importClueExcelSubmit">导入</el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {doGet} from '../http/httpRequest'
+import {doGet, doPost} from '../http/httpRequest'
+import {messageTip} from '../utils/message.js'
 
 export default defineComponent({
   name: "ClueView",
 
+
+  inject: ['reload'],
 
   mounted(): any {
     this.getClueDataList();
@@ -92,7 +134,8 @@ export default defineComponent({
       }],
 
       pageSize: 0,
-      total: 0
+      total: 0,
+      importClueExcelDialogVisible: false,
     }
   },
 
@@ -117,11 +160,38 @@ export default defineComponent({
       this.getClueDataList(current)
     },
 
+
+    importExcel() {
+      this.importClueExcelDialogVisible = true;
+    },
+    importClueExcelSubmit() {
+      this.$refs.uploadRef.submit();
+    },
+
+    uploadFile(param) {
+
+      let fileObj = param.file;
+      let formDate = new FormData();
+      formDate.append('file', fileObj)
+      doPost("/api/importExcel", {}).then(resp => {
+        if (resp.data.code === 200) {
+
+          this.$refs.uploadRef.clearFiles()
+
+          this.reload()
+          messageTip("导入成功")
+        } else {
+          messageTip("导入失败")
+        }
+      })
+    }
   }
 })
 </script>
 
 
 <style scoped>
-
+.filePadding {
+  padding-top: 50px;
+}
 </style>

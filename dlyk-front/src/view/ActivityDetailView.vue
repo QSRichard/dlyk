@@ -107,7 +107,7 @@
     <el-form ref="editActivityRemarkRefForm" :model="editActivityRemarkQuery" label-width="120px"
              :rules="editActivityRemarkRules">
 
-      <el-form-item label="活动备注" prop="email">
+      <el-form-item label="活动备注" prop="noteContent">
         <el-input
             v-model="editActivityRemarkQuery.noteContent"
             :rows="8"
