@@ -135,7 +135,7 @@ export default defineComponent({
             </el-icon>
             <span>线索管理</span>
           </template>
-          <el-menu-item index="1-1">
+          <el-menu-item index="/dashboard/clue">
             <el-icon>
               <Film></Film>
             </el-icon>

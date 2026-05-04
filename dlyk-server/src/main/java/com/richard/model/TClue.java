@@ -1,9 +1,10 @@
 package com.richard.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 线索表
@@ -130,6 +131,15 @@ public class TClue implements Serializable {
      * 编辑人
      */
     private Integer editBy;
+
+    private TUser ownerDo = new TUser();
+    private TActivity activityDo = new TActivity();
+    private TDicValue appellationDo = new TDicValue();
+    private TDicValue needLoanDo = new TDicValue();
+    private TDicValue intentionStateDo = new TDicValue();
+    private TDicValue stateDo = new TDicValue();
+    private TDicValue sourceDo = new TDicValue();
+    private TProduct intentionProductDo = new TProduct();
 
     private static final long serialVersionUID = 1L;
 }

@@ -23,8 +23,6 @@ public class ActivityController {
         if (current == null) {
             current = 1;
         }
-
-        System.out.println(query);
         PageInfo<TActivity> userList = activityService.getActivityByPage(current, query);
 
         return R.OK(userList);
@@ -41,7 +39,7 @@ public class ActivityController {
 
     @PutMapping(value = "/api/activity/edit")
     private R editActivity(ActivityQuery query, @RequestHeader(value = "Authorization") String token) {
-        
+
         query.setToken(token);
 
         int update = activityService.updateActivity(query);
