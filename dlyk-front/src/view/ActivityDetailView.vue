@@ -130,8 +130,8 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {doGet, doPost, doPut} from '../http/httpRequest'
-import {goBack, messageTip} from '../utils/message.js'
+import {doDelete, doGet, doPost, doPut} from '../http/httpRequest'
+import {goBack, messageConfirm, messageTip} from '../utils/message.js'
 
 export default defineComponent({
   name: "ActivityDetailView",
@@ -280,6 +280,23 @@ export default defineComponent({
             }
           }
       )
+    },
+
+
+    del(id) {
+      messageConfirm("确认删除?").then(() => {
+        doDelete("/api/activity/remark/" + id, {}).then(resp => {
+          if (resp.data.code === 200) {
+            messageTip("删除成功", 'success')
+            this.reload();
+          } else {
+            messageTip("删除失败, 原因 " + resp.data.msg, 'error')
+          }
+        })
+      }).catch(() => {
+        messageTip("取消删除", 'warning')
+      })
+
     }
   }
 })

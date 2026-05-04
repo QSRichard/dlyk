@@ -58,7 +58,7 @@
         left join t_user tu2 on tar.edit_by = tu2.id
         <where>
             tar.activity_id = #{activityId, jdbcType=INTEGER}
-        
+            and (tar.deleted is null or tar.deleted = 0)
             ${filterSql}
         </where>
     </select>

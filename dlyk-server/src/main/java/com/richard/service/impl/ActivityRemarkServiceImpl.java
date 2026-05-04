@@ -62,4 +62,12 @@ public class ActivityRemarkServiceImpl implements ActivityRemarkService {
         tActivityRemark.setEditBy(id);
         return tActivityRemarkMapper.updateByPrimaryKeySelective(tActivityRemark);
     }
+
+    @Override
+    public int deleteActivityRemarkById(Integer id) {
+        TActivityRemark tActivityRemark = new TActivityRemark();
+        tActivityRemark.setId(id);
+        tActivityRemark.setDeleted(1);
+        return tActivityRemarkMapper.updateByPrimaryKeySelective(tActivityRemark);
+    }
 }

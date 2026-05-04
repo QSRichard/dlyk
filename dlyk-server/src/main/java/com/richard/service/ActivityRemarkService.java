@@ -12,7 +12,9 @@ public interface ActivityRemarkService {
 
 
     TActivityRemark getActivityRemarkById(Integer id);
-    
+
 
     int updateActivityRemark(ActivityRemarkQuery activityRemarkQuery);
+
+    int deleteActivityRemarkById(Integer id);
 }
